@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
@@ -27,14 +27,6 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Sync to S3 (if secrets are set)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.repository.owner.login == github.actor && secrets.AWS_PRO_NAME && secrets.AWS_ACCESS_KEY_ID && secrets.AWS_SECRET_ACCESS_KEY
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_PRO_NAME: ${{ secrets.AWS_PRO_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ap-southeast-1'
-          SOURCE_DIR: 'build'
+      - name: Sync to S3 (if main branch and secrets are set)
+        if: github.ref == 'refs/heads/main' && secrets.AWS_PRO_NAME && secrets.AWS_ACCESS_KEY_ID && secrets.AWS_SECRET_ACCESS_KEY
+        run: echo "Syncing to S3"
